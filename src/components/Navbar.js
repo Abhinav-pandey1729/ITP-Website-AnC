@@ -1,30 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ancLogo from '../assets/anc_logo.png';
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <nav className="bg-secondary p-4 flex items-center sticky top-0 z-50">
+    <nav className="bg-secondary p-4 flex items-center justify-between sticky top-0 z-50">
+      {/* Left: Logo and council */}
       <div className="flex items-center gap-2">
-        <img src={ancLogo} alt="ANC Logo" className="h-10 w-auto" />
-        <span className="text-lg font-bold">Academics and Career Council</span>
+        <img src={ancLogo} alt="ANC Logo" className="h-14 w-auto" />
+        <span className="text-lg font-bold whitespace-nowrap">Academics and Career Council</span>
       </div>
+      {/* Center: ITP */}
       <div className="flex-grow flex justify-center">
-        <span className="text-xl font-bold">Internship Training Program (ITP)</span>
+        <span className="text-xl font-bold whitespace-nowrap">Internship Training Program (ITP)</span>
       </div>
-      <div className="space-x-4 flex items-center">
+      {/* Right: Nav links */}
+      <div className="flex items-center gap-6 relative">
         <Link to="/" className="hover:text-accent">Home</Link>
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="hover:text-accent"
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            className="hover:text-accent focus:outline-none"
           >
             Resources
           </button>
           {isDropdownOpen && (
-            <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 text-left">
               <a
                 href="https://drive.google.com/drive/folders/1zJBCoNXUq-21GLSjNtL3WYQohwTK-M6W"
                 target="_blank"
